@@ -12,29 +12,43 @@ if __name__ == '__main__':
 
 	sky_surf = pygame.image.load('assets/graphics/Sky.png').convert()
 	ground_surf = pygame.image.load('assets/graphics/ground.png').convert()
-	text_surf = test_font.render('My game', False, 'Black')
+	score_surf = test_font.render('My game', False, (64, 64, 64))
+	score_rect = score_surf.get_rect(center=(WIDTH / 2, 50))
 
 	snail_surf = pygame.image.load('assets/graphics/snail/snail1.png').convert_alpha()
-	snail_rect = snail_surf.get_rect(bottomright=(800, 300))
+	snail_rect = snail_surf.get_rect(bottomright=(WIDTH, 300))
 
 	player_surf = pygame.image.load('assets/graphics/player/player_walk_1.png').convert_alpha()
 	player_rect = player_surf.get_rect(midbottom=(80, 300))
+	player_gravity = 0
 
 	while True:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				exit()
+			if event.type == pygame.MOUSEBUTTONDOWN and player_rect.collidepoint(event.pos):
+				player_gravity = -9
+
+			if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+				player_gravity = -9
 
 		screen.blit(sky_surf, (0, 0))
 		screen.blit(ground_surf, (0, 300))
-		screen.blit(text_surf, (300, 50))
+
+		pygame.draw.rect(screen, '#c0e8ec', score_rect)
+		pygame.draw.rect(screen, '#c0e8ec', score_rect, 10)
+		screen.blit(score_surf, score_rect)
 
 		if snail_rect.right <= 0:
 			snail_rect.left = 800
 		snail_rect.x -= 4
 		screen.blit(snail_surf, snail_rect)
 
+		# Player
+		player_gravity += .25
+		player_rect.y += player_gravity
+		player_rect.bottom = min(player_rect.bottom, 300)
 		screen.blit(player_surf, player_rect)
 
 		pygame.display.update()
